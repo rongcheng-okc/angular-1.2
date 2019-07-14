@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Register</title>
+  <style>
+    section {
+      border: 1px solid rgb(0, 255, 213);
+      padding: 5px;
+    }
+  </style>
+  <script src="./js/angular-1.2.0/angular.js"></script>
+</head>
+
+<body>
+  <section id="section_1" ng-app="app1" ng-controller="firstCtrl">
+    <h1 ng-bind="name"></h1>
+    <button ng-click="handleClick1()">调用方法</button>
+    <hello-world></hello-world>
+  </section>
+  <section id="section_2" ng-app="app2" ng-controller="firstCtrl">
+    <div>
+      <p>名字 : <input type="text" ng-model="name"></p>
+      <h1>Hello {{name}}</h1>
+    </div>
+  </section>
+  <section id="section_3" ng-app="app3" ng-controller="firstCtrl">
+    <h1 ng-bind="name"></h1>
+  </section>
+  <script>
+    var app1 = angular.module('app1', [])
+      .controller('firstCtrl', function ($scope, $location) {
+        $scope.name = 'RongCheng';
+        $scope.handleClick1 = function () {
+          $scope.name = 'RongCheng1';
+        }
+      })
+      .directive("helloWorld", function () {
+        return {
+          restrict: 'AE',
+          template: '<h1>自定义指令!</h1>'
+        };
+      });
+
+    var app2 = angular.module('app2', [])
+      .controller('firstCtrl', function ($scope, $location) {
+        $scope.name = 'RongCheng2';
+      })
+
+    var app3 = angular.module('app3', [])
+      .controller('firstCtrl', function ($scope, $location) {
+        $scope.name = 'RongCheng3';
+        $scope.changeName = function () {
+          $scope.name = 'newName';
+        }
+        $scope.sayName = function () {
+          console.log($scope.name);
+        }
+      })
+
+    angular.bootstrap(document.getElementById("section_2"), ['app2']);
+    angular.bootstrap(document.getElementById("section_3"), ['app3']);
+
+    /*
+    1.如果不手动启动，那么页面默认只启动注册的第一个应用
+    2.可以手动启动多个应用（也可以启动同一个应用在不同的元素上，但是没意义）
+    */
+
+    /*
+    //通过DOM操作获取app对象
+    var element = angular.element($document.getElementById("section_3"));
+    //得到app对象，可以获取app的controller
+    var controller = element.controller();
+    //得到app对象，可以获取app的$scope
+    var scope = element.scope();
+    //调用$scope中的方法
+    scope.changeName();
+    //调用 $apply 方法后，才可以将值的变化同步到视图，如果不调用，值已经是更新了，只是没有更新到视图
+    scope.$apply();
+    */
+  </script>
+</body>
+
+</html>
