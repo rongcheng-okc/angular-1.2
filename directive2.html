@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Directive2</title>
+  <style>
+    section {
+      border: 1px solid rgb(0, 255, 213);
+      padding: 5px;
+    }
+
+    .red-border {
+      border: 2px solid rgb(238, 72, 174);
+    }
+
+    .blue-border {
+      border: 2px solid rgb(50, 115, 235);
+    }
+  </style>
+  <script src="./js/jquery.1.7.2.js"></script>
+  <script src="./js/angular-1.2.0/angular.js"></script>
+</head>
+
+<body>
+  <section id="section_1" ng-app="app1" ng-controller="directiveCtrl">
+    <section>
+      <input type="text" ng-class="{'red-border': hasRedBorder}" directive-link data-blur="f1()" placeholder="指令-link">
+    </section>
+    <section>
+      <p one-priority two-priority>测试指令里的 priority</p>
+    </section>
+    <section directive-compile='5'></section>
+    <section directive-compile-pre-post></section>
+  </section>
+  <script>
+    var app1 = angular.module('app1', [])
+      .controller('directiveCtrl', function ($scope, $location) {
+        $scope.name = 'RC';
+        $scope.user = {
+          age: 27
+        };
+        $scope.hasRedBorder = false;
+        $scope.f1 = function () {
+          $scope.hasRedBorder = !$scope.hasRedBorder;
+        }
+      })
+      .directive('directiveLink', function () {
+        return {
+          restrict: 'A',
+          link: function (scope, element, attrs) {
+            $(element).bind('hover', function (e) {
+              scope.$apply(attrs.blur);
+            });
+          }
+        }
+      })
+      .directive('directiveCompile', function () {
+        return {
+          restrict: 'A',
+          compile: function (element, attrs) {
+            console.log(element);
+            console.log(attrs);
+            for (let i = 0; i < attrs.directiveCompile; i++) {
+              let elP = `
+                <p>No. ${i}</p>
+              `;
+              $(element).append($(elP));
+            }
+          }
+        }
+      })
+      .directive('directiveCompilePrePost', function () {
+        return {
+          restrict: 'A',
+          compile: function (element, attrs) {
+            return {
+              pre: function (scope, el, attr) {
+                console.log('pre link', scope, el, attr);
+              },
+              post: function (scope, el, attr) {
+                console.log('post link', scope, el, attr);
+              }
+            }
+          }
+        }
+      })
+      .directive('helloWorldScopeTransclude', function () {
+        return {
+          restrict: 'E',
+          transclude: true,
+          template: `
+            <section>
+              <h1>Transclude</h1>
+              <h2>{{name}}</h2>
+              <div ng-transclude></div>  
+            </section> 
+          `,
+          controller: function ($scope, $element, $attrs, $transclude, $log) {  //在这里你可以注入你想注入的服务  
+            $scope.name = '11';
+            $transclude(function (clone) {
+              var html = `
+              <div>
+                <p ng-bind="name"></p>
+                <input ng-model="name">
+              </div>
+              `;
+              var a = angular.element(html);
+
+              a.css('color', $attrs.myColor);
+              a.append(clone);
+              for (let i = 0; i < clone.length; i++) {
+                $log.info(clone[i].tagName, clone[i]);
+              }
+              $element.append(a);
+            });
+
+            $log.info('hello everyone');
+          },
+          scope: {
+            // name: 'transcludeName',
+            hanleClick: '&hanleClick'
+          },
+        }
+      })
+      .directive('onePriority', function () {
+        return {
+          priority: 1,
+          link: function (scope, element, attrs) {
+            element.css('border', '2px solid rgb(50, 115, 235)');
+          },
+        }
+      })
+      .directive('twoPriority', function () {
+        return {
+          priority: 2,
+          link: function (scope, element, attrs) {
+            element.css('border', '2px solid yellow');
+          },
+        }
+      });
+
+    /*
+    */
+  </script>
+</body>
+
+</html>
