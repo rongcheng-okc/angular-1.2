@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Directive2</title>
+  <style>
+    section {
+      border: 1px solid rgb(0, 255, 213);
+      padding: 5px;
+    }
+
+    .red-border {
+      border: 2px solid rgb(238, 72, 174);
+    }
+
+    .blue-border {
+      border: 2px solid rgb(50, 115, 235);
+    }
+  </style>
+  <script src="./js/jquery.1.7.2.js"></script>
+  <script src="./js/angular-1.2.0/angular.js"></script>
+</head>
+
+<body>
+  <section id="section_1" ng-app="app1" ng-controller="directiveCtrl">
+    <directive-require common></directive-require>
+    <directive-outer>
+      <directive-inner></directive-inner>
+      <directive-inner></directive-inner>
+    </directive-outer>
+  </section>
+  <script>
+    var app1 = angular.module('app1', [])
+      .controller('directiveCtrl', function ($scope, $location) {
+        $scope.name = 'RC';
+        $scope.user = {
+          age: 27
+        };
+        $scope.hasRedBorder = false;
+        $scope.f1 = function () {
+          $scope.hasRedBorder = !$scope.hasRedBorder;
+        }
+      })
+      .directive('common', function () {
+        return {
+          controller: function ($scope) {
+            console.log($scope);
+            this.method1 = function () {
+              console.log('$scope.method1');
+              return $scope.name;
+            };
+          }
+        }
+      })
+      .directive('directiveRequire', function () {
+        return {
+          restrict: 'E',
+          require: 'common',
+          template: `
+            <div>
+              {{greeting}}
+            </div>
+          `,
+          link: function (scope, elem, attrs, common) {
+            scope.greeting = common.method1();
+          }
+        }
+      })
+      .directive('directiveOuter', function () {
+        return {
+          restrict: 'AE',
+          replace: true,
+          transclude: true,
+          template: `
+            <section>
+              Outer
+              <div ng-transclude></div>  
+            </section> 
+          `,
+          controller: function () {
+            console.log('Outer controller');
+          },
+          compile: function (element, attrs) {
+            return {
+              pre: function () {
+                console.log('Outer complie pre');
+              },
+              post: function () {
+                console.log('Outer complie post');
+              }
+            }
+          }
+        }
+      })
+      .directive('directiveInner', function () {
+        return {
+          restrict: 'AE',
+          replace: true,
+          template: `
+            <p>
+              Inner  
+            </p> 
+          `,
+          controller: function () {
+            console.log('Inner controller');
+          },
+          compile: function (element, attrs) {
+            return {
+              pre: function (scope, el, attr) {
+                console.log('Inner complie pre');
+              },
+              post: function () {
+                console.log('Inner complie post');
+              }
+            }
+          }
+        }
+      })
+    /*
+    */
+  </script>
+</body>
+
+</html>

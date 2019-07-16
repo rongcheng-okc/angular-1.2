@@ -51,6 +51,7 @@
         return {
           restrict: 'A',
           link: function (scope, element, attrs) {
+            console.info('link---', scope, element, attrs)
             $(element).bind('hover', function (e) {
               scope.$apply(attrs.blur);
             });
@@ -61,8 +62,7 @@
         return {
           restrict: 'A',
           compile: function (element, attrs) {
-            console.log(element);
-            console.log(attrs);
+            console.log('compile', element, attrs);
             for (let i = 0; i < attrs.directiveCompile; i++) {
               let elP = `
                 <p>No. ${i}</p>
@@ -78,51 +78,13 @@
           compile: function (element, attrs) {
             return {
               pre: function (scope, el, attr) {
-                console.log('pre link', scope, el, attr);
+                console.log('pre link---', scope, el, attr);
               },
               post: function (scope, el, attr) {
-                console.log('post link', scope, el, attr);
+                console.log('post link---', scope, el, attr);
               }
             }
           }
-        }
-      })
-      .directive('helloWorldScopeTransclude', function () {
-        return {
-          restrict: 'E',
-          transclude: true,
-          template: `
-            <section>
-              <h1>Transclude</h1>
-              <h2>{{name}}</h2>
-              <div ng-transclude></div>  
-            </section> 
-          `,
-          controller: function ($scope, $element, $attrs, $transclude, $log) {  //在这里你可以注入你想注入的服务  
-            $scope.name = '11';
-            $transclude(function (clone) {
-              var html = `
-              <div>
-                <p ng-bind="name"></p>
-                <input ng-model="name">
-              </div>
-              `;
-              var a = angular.element(html);
-
-              a.css('color', $attrs.myColor);
-              a.append(clone);
-              for (let i = 0; i < clone.length; i++) {
-                $log.info(clone[i].tagName, clone[i]);
-              }
-              $element.append(a);
-            });
-
-            $log.info('hello everyone');
-          },
-          scope: {
-            // name: 'transcludeName',
-            hanleClick: '&hanleClick'
-          },
         }
       })
       .directive('onePriority', function () {
