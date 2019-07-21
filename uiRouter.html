@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Router</title>
+  <script src="./js/jquery.1.7.2.js"></script>
+  <script src="./js/angular-1.2.0/angular.js"></script>
+  <script src="./js/angular-1.2.0/angular-ui-router.js"></script>
+</head>
+
+<body>
+  <section ng-app="myApp" ng-controller="myCtrl">
+    <h1>路由嵌套的主体页-----AngularJS Home Page (Ui-router)</h1>
+    <div ui-view=""></div>
+
+  </section>
+
+  <script>
+    angular.module('myApp', ['ui.router'])
+      // .controller('aController', function ($scope, $route) {
+      //   $scope.hello = 'hello,a!';
+      //   $scope.$on('$viewContentLoaded', function () {
+      //     console.log('aController content loaded!');
+      //   });
+      // })
+      // .controller('bController', function ($scope) {
+      //   $scope.hello = 'hello,b!';
+      // })
+      .controller('myCtrl', function ($scope) {
+        $scope.$on('$viewContentLoaded', function () {
+          console.log('content loaded!');
+        });
+
+        $scope.$on('$routeChangeStart', function (event, next, current) {
+          //event.preventDefault(); //cancel url change
+          console.log('route change start!');
+        });
+      })
+      .config(function ($stateProvider, $urlRouterProvider) {
+        console.log(22);
+        $urlRouterProvider.when('/', '/page');
+        //这一行定义了会在main.html页面第一个显示出来的状态，作为页面被加载好以后第一个被使用的路由.
+        $stateProvider
+          .state('page', {
+            url: '/page',
+            templateUrl: './template/page.html'
+          })
+          .state('page.page1', {
+            url: '/page1',
+            templateUrl: 'template/child/page1.html'
+          })
+          .state('page.page2', {
+            url: '/page2',
+            templateUrl: 'template/child/page2.html'
+          })
+
+      })
+
+    /*
+    */
+
+  </script>
+</body>
+
+</html>

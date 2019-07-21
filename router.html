@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Router</title>
+  <script src="./js/jquery.1.7.2.js"></script>
+  <script src="./js/angular-1.2.0/angular.js"></script>
+  <script src="./js/angular-1.2.0/angular-route.js"></script>
+</head>
+
+<body>
+  <section ng-app="myApp" ng-controller="myCtrl">
+    <ul>
+      <li><a href="#/a">click a</a></li>
+      <li><a href="#/b">click b</a></li>
+    </ul>
+    <hr>
+    <ng-view></ng-view>
+    <ng-view></ng-view>
+  </section>
+
+  <script>
+    angular.module('myApp', ['ngRoute'])
+      .controller('aController', function ($scope, $route) {
+        $scope.hello = 'hello,a!';
+        $scope.$on('$viewContentLoaded', function () {
+          console.log('aController content loaded!');
+        });
+      })
+      .controller('bController', function ($scope) {
+        $scope.hello = 'hello,b!';
+      })
+      .controller('myCtrl', function ($scope) {
+        $scope.$on('$viewContentLoaded', function () {
+          console.log('ng-view content loaded!');
+        });
+
+        $scope.$on('$routeChangeStart', function (event, next, current) {
+          //event.preventDefault(); //cancel url change
+          console.log('route change start!');
+        });
+      })
+      .config(function ($routeProvider, $locationProvider) {
+        $routeProvider
+          .when('/a', {
+            templateUrl: './template/a.html',
+            controller: 'aController'
+          })
+          .when('/b', {
+            templateUrl: './template/b.html',
+            controller: 'bController',
+            resolve: {
+              delay: function ($q, $timeout) {
+                var delay = $q.defer();
+                $timeout(delay.resolve, 1000);
+                return delay.promise;
+              }
+            }
+          })
+          .otherwise({
+            redirectTo: '/a'
+          });
+      })
+      .service('ServiceUtils', function ($timeout) {
+
+      })
+
+    /*
+    */
+
+  </script>
+</body>
+
+</html>
