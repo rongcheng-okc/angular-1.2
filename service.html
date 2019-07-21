@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Service</title>
+  <script src="./js/jquery.1.7.2.js"></script>
+  <script src="./js/angular-1.2.0/angular.js"></script>
+</head>
+
+<body>
+  <section ng-app="myApp" ng-controller="myCtrl">
+    <h1>Hi, {{name}}</h1>
+    <h1>Timer1：{{time1}}</h1>
+    <h1>Timer2：{{time2}}</h1>
+  </section>
+
+  <script>
+    angular.module('myApp', [])
+      .controller('myCtrl', function ($scope, $interval, ServiceUtils) {
+        $scope.time1 = ServiceUtils.getLocaleTimeString();
+        $scope.time2 = ServiceUtils.getTimeString();
+        $scope.name = 'RC';
+        ServiceUtils.changeNameAsync($scope);
+        $interval(function () {
+          $scope.time1 = ServiceUtils.getLocaleTimeString();
+        }, 1000);
+
+        // setInterval(function () {
+        //   $scope.$apply(function () {
+        //     $scope.time2 = new Date().toTimeString();
+        //   });
+        // }, 2000);
+        setInterval(function () {
+          $scope.time2 = ServiceUtils.getTimeString();
+          $scope.$apply();
+        }, 2000);
+      })
+      .service('ServiceUtils', function ($timeout) {
+        this.getTimeString = function () {
+          return new Date().toTimeString();
+        }
+        this.getLocaleTimeString = function () {
+          return new Date().toLocaleTimeString();
+        }
+        this.changeNameAsync = function (scope) {
+          $timeout(function () {
+            scope.name = 'RC003';
+          }, 2000);
+        }
+      })
+
+    /*
+    如果这里不用 $timeout, $interval 这种服务，而是用原生的 js ，那么就需要在操作完成后
+    主动调用 $scope.$apply() 如上演示了两种使用方式，效果都一样
+    */
+
+  </script>
+</body>
+
+</html>

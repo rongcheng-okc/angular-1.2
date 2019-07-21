@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Directive</title>
+</head>
+
+<body>
+  <section ng-app="myApp" ng-controller="myCtrl">
+    <h1>Learn Constant.</h1>
+    <ul>
+      <li>{{versionInConstant}}</li>
+      <li>{{objInConstant.age}}</li>
+      <li>{{nameInValue}}</li>
+      <li>{{objInValue.hobby}}</li>
+    </ul>
+    <button ng-click="handleClick10()">改变Constant里的字符串</button>
+    <button ng-click="handleClick11()">改变Constant里的对象的属性</button>
+    <button ng-click="handleClick12()">改变Constant里的对象的地址</button>
+    <button ng-click="handleClick20()">改变Value里的字符串</button>
+    <button ng-click="handleClick21()">改变Value里的对象的属性</button>
+    <button ng-click="handleClick22()">改变Value里的对象的地址</button>
+  </section>
+  <script src="./js/jquery.1.7.2.js"></script>
+  <script src="./js/angular-1.2.0/angular.js"></script>
+  <script>
+    angular.module('myApp', [])
+      .constant('logo', '=>')
+      .constant('oVersionInConstant', 'V1.0.0')
+      .constant('oObjInConstant', { age: 27 })
+      .value('oNameInValue', 'RC')
+      .value('oObjInValue', { hobby: 'basketbal' })
+      .service('utilService', function (logo) {
+        this.showWatch = function (newValue, oldValue) {
+          console.log(oldValue, logo, newValue);
+        }
+      })
+      .controller('myCtrl', function ($scope, utilService, oVersionInConstant, oObjInConstant, oNameInValue, oObjInValue) {
+        console.log(oVersionInConstant, oObjInConstant);
+        console.log(oNameInValue, oObjInValue);
+        // setTimeout(function () {
+        // oObjInConstant.age = 26;
+        // oVersionInConstant = 'V0.0.2';
+        // oNameInValue = 'RC1';
+        // oObjInValue.hobby = 'OKC';
+        // $scope.$apply();
+        // console.log(oVersionInConstant, oObjInConstant);
+        // console.log(oNameInValue, oObjInValue);
+        // }, 2000);
+        $scope.versionInConstant = oVersionInConstant;
+        $scope.objInConstant = oObjInConstant;
+        $scope.nameInValue = oNameInValue;
+        $scope.objInValue = oObjInValue;
+        $scope.$watch('versionInConstant', utilService.showWatch)
+        $scope.$watch('objInConstant', utilService.showWatch, true) // 必须要有第三个参数，否则观测不到数组和对象的属性值变化
+        $scope.$watch('nameInValue', utilService.showWatch)
+        $scope.$watch('objInValue', utilService.showWatch, true)
+        $scope.handleClick10 = function () {
+          try {
+            oVersionInConstant = 'V2.0.0';
+          } catch (e) {
+            alert(e);
+          }
+        }
+        $scope.handleClick11 = function () {
+          try {
+            oObjInConstant.age = 26;
+          } catch (e) {
+            alert(e);
+          }
+        }
+        $scope.handleClick12 = function () {
+          try {
+            oObjInConstant = {};
+          } catch (e) {
+            alert(e);
+          }
+        }
+        $scope.handleClick20 = function () {
+          try {
+            oNameInValue = 'RC000';
+          } catch (e) {
+            alert(e);
+          }
+        }
+        $scope.handleClick21 = function () {
+          try {
+            oObjInValue.hobby = 'OKC';
+          } catch (e) {
+            alert(e);
+          }
+        }
+        $scope.handleClick22 = function () {
+          try {
+            oObjInValue = { hobby: 'money' };
+          } catch (e) {
+            alert(e);
+          }
+        }
+      })
+
+/*
+constant 注册的常量，当值是普通类型（String, Boolean, Null, Undefined, Symbol, Number）的时候,
+不能在任何地方改变它； 如果值类型为 Object 时候，不能改变常量的指向，但是属性的指向是可以改变的
+
+value 申明的变量，任何地方可做任何改动
+*/
+  </script>
+</body>
+
+</html>

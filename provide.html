@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Service</title>
+  <script src="./js/jquery.1.7.2.js"></script>
+  <script src="./js/angular-1.2.0/angular.js"></script>
+</head>
+
+<body>
+  <section ng-app="myApp" ng-controller="myCtrl">
+    <h1>Hi, {{name}}</h1>
+    <h1>hobby：{{hobby}}</h1>
+    <hr>
+    <h2>Weather: {{weather}}</h2>
+  </section>
+
+  <script>
+    angular.module('myApp', [])
+      .provider('provider1', function () {
+        var hobby = 'basketball';
+        var url = 'https://www.apiopen.top/weatherApi?city=%E6%9D%AD%E5%B7%9E';
+        this.changeHobby = function (value) {
+          hobby = value;
+        }
+        this.$get = function ($http, $q) {
+          return {
+            getData: function () {
+              var d = $q.defer();
+              $http.get(url)
+                .success(function (response) {
+                  d.resolve(response);
+                })
+                .error(function () {
+                  d.reject("error");
+                });
+              return d.promise;
+            },
+            name: 'RC',
+            hobby: hobby
+          }
+        }
+      })
+      .config(function (provider1Provider) {
+        console.log('---config---');
+        provider1Provider.changeHobby('Okc');
+      })
+      .controller('myCtrl', function ($scope, provider1) {
+        console.log('---controller---');
+        $scope.name = provider1.name;
+        $scope.hobby = provider1.hobby;
+        $scope.weather = '';
+        provider1.getData().then(function (res) {
+          console.log(res);
+          $scope.weather = res.data.forecast[0];
+        }, function (res) {
+          console.error(res);
+        });
+      })
+      .service('ServiceUtils', function () {
+
+      })
+
+    /*
+    */
+
+  </script>
+</body>
+
+</html>

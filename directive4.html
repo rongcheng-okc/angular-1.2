@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Directive</title>
+</head>
+
+<body>
+  <section ng-app="myApp" ng-controller="myCtrl">
+    <h1>Learn Directive.</h1>
+    <p>
+      <label>name：</label><span>{{name}}</span>
+
+      <label>age：</label><span>{{age}}</span>
+
+      <label>hobby：</label><span>{{hobby}}</span>
+
+    </p>
+    <div directive-link></div>
+    <div directive-common directive-a></div>
+    <div directive-common directive-use-ctrl></div>
+    <!-- <directive-outer>
+<directive-inner></directive-inner>
+</directive-outer> -->
+    <!-- 不能执行 -->
+  </section>
+  <script src="./js/jquery.1.7.2.js"></script>
+  <script src="./js/angular-1.2.0/angular.js"></script>
+  <script>
+    angular.module('directiveModule', [])
+      .directive('directiveA', function () {
+        return {
+          restrict: 'A',
+          require: 'directiveCommon',
+          link: function (scope, elem, attrs, controllerInstance) {
+            console.log(3, scope, elem, attrs);
+            scope.hobby = 'basketball';
+            console.log(4, controllerInstance);
+            controllerInstance.showName();
+            console.log('\n');
+          }
+        }
+      })
+    angular.module('myApp', ['directiveModule'])
+      .controller('myCtrl', function ($scope) {
+        $scope.name = 'RC';
+        $scope.age = 27;
+      })
+      .directive('directiveLink', function () {
+        return {
+          restrict: 'A',
+          link: function (scope, elem, attrs) {
+            console.log(1, scope, elem, attrs);
+            console.log('\n');
+          }
+        }
+      })
+      .directive('directiveCommon', function () {
+        return {
+          restrict: 'AE',
+          controller: function ($scope, $element, $attrs) {
+            $scope.name = 'RusellWest';
+            this.a = '88';
+            this.showName = function () {
+              console.log(66, $scope.name, this.a);
+            };
+            console.log(2, $scope, $element, $attrs);
+            console.log('\n');
+          }
+        }
+      })
+      .directive('directiveUseCtrl', function () {
+        return {
+          restrict: 'A',
+          require: 'directiveCommon',
+          link: function (scope, elem, attrs, controllerInstance) {
+            controllerInstance.showName();
+            console.log('\n');
+          }
+        }
+      })
+      .directive('directiveOuter', function () {
+        return {
+          scope: {
+            hobby: '=',
+          },
+          restrict: 'AE',
+          transclude: true,
+          controller: function ($scope) {
+            console.log(77, $scope);
+            this.sayHi = function () {
+              $scope.hobby = 'OKC Basketball';
+              console.log($scope.age, 'Hi, girl.');
+            }
+          }
+        }
+      })
+      .directive('directiveInner', function () {
+        return {
+          scope: {},
+          restrict: 'AE',
+          require: '^directiveOuter',
+          link: function (scope, elem, attrs, controllerInstance) {
+            console.log(22, scope);
+            controllerInstance.sayHi();
+          }
+        }
+      })
+
+  </script>
+</body>
+
+</html>
