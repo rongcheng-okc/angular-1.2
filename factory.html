@@ -22,9 +22,11 @@
   <script>
     angular.module('myApp', [])
       .factory('myFactory1', function () {
-        var obj = {};
-        obj.name = 'RC';
-        var age;  //定义一个私有化的变量
+        let obj = {
+          name: 'RC',
+        };
+
+        let age;  //定义一个私有化的变量
         obj.setAge = function (newAge) {
           age = newAge;
         }
@@ -34,7 +36,7 @@
         return obj;
       })
       .factory('myFactory2', function () {
-        var obj = {
+        let obj = {
           age: 10
         };
         obj.setAge = function (newAge) {
@@ -48,17 +50,16 @@
         $scope.age1 = myFactory1.getAge();
         myFactory1.setAge(27);
         $scope.age2 = myFactory1.getAge();
+
         $scope.obj = myFactory2;
         setTimeout(function () {
           myFactory2.setAge(20);
           $scope.$apply();
         }, 2000);
       })
-      .service('ServiceUtils', function () {
-
-      })
 
     /*
+    可见这里 factory 是提供出了一个对象出来，供controller 里使用
     */
 
   </script>

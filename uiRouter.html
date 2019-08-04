@@ -40,7 +40,6 @@
         });
       })
       .config(function ($stateProvider, $urlRouterProvider) {
-        console.log(22);
         $urlRouterProvider.when('/', '/page');
         //这一行定义了会在main.html页面第一个显示出来的状态，作为页面被加载好以后第一个被使用的路由.
         $stateProvider
@@ -60,6 +59,7 @@
       })
 
     /*
+    当你需要为在应用运行前就必须设置好的全局配置项提供API时，你才需要用到Provider
     */
 
   </script>

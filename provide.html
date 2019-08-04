@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Service</title>
+  <title>Provider</title>
   <script src="./js/jquery.1.7.2.js"></script>
   <script src="./js/angular-1.2.0/angular.js"></script>
 </head>
@@ -16,55 +16,80 @@
     <h1>hobby：{{hobby}}</h1>
     <hr>
     <h2>Weather: {{weather}}</h2>
+    <hr>
+    <h2>OnlineName：{{onlineName}}</h2>
   </section>
 
   <script>
     angular.module('myApp', [])
       .provider('provider1', function () {
-        var hobby = 'basketball';
-        var url = 'https://www.apiopen.top/weatherApi?city=%E6%9D%AD%E5%B7%9E';
+        let hobby = '';
+        let onlineName = '';
+        let url = 'https://www.apiopen.top/weatherApi?city=%E6%9D%AD%E5%B7%9E';
         this.changeHobby = function (value) {
           hobby = value;
+        }
+        this.getOnlineName = ($http) => {
+          // const url = 'https://www.apiopen.top/femaleNameApi?page=1';
+          // $http.get(url)
+          // .success((res) => {
+          //   onlineName = res.data;
+          // })
+          // .error(e => {
+          //   console.log('获取网名接口出错', e);
+          // })
+          setTimeout(() => {
+            onlineName = 'Null';
+            console.log('this.getOnlineName done');
+          }, 2000);
         }
         this.$get = function ($http, $q) {
           return {
             getData: function () {
-              var d = $q.defer();
+              let d = $q.defer();
               $http.get(url)
                 .success(function (response) {
                   d.resolve(response);
                 })
                 .error(function () {
-                  d.reject("error");
+                  d.reject('error');
                 });
               return d.promise;
             },
             name: 'RC',
-            hobby: hobby
+            hobby,
+            onlineName,
           }
         }
       })
       .config(function (provider1Provider) {
+         /*
+        在这个阶段中，服务不能被访问，因为它们根本都还没有被创建
+        （只是provider被实例化了，由provider创建并返回的服务是还没有被创建的）。
+        （译注：比如$httpProvider服务被创建并实例化了，但是作为$httpProvider所返回的服务$http还无法创建。）
+        */
         console.log('---config---');
         provider1Provider.changeHobby('Okc');
+        provider1Provider.getOnlineName();
       })
       .controller('myCtrl', function ($scope, provider1) {
         console.log('---controller---');
         $scope.name = provider1.name;
         $scope.hobby = provider1.hobby;
         $scope.weather = '';
+        $scope.onlineName = provider1.onlineName;
         provider1.getData().then(function (res) {
           console.log(res);
           $scope.weather = res.data.forecast[0];
-        }, function (res) {
+        })
+        .catch(e => {
           console.error(res);
-        });
-      })
-      .service('ServiceUtils', function () {
-
+        })
       })
 
     /*
+    provider里只有 this.$get 函数返回的对象才能在 controller 中直接获取
+    先执行 config ，然后才进入 controller
     */
 
   </script>

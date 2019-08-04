@@ -53,6 +53,7 @@
       })
 
     /*
+    service 里面定义的数据需要放在 this 上才可以被 service 实例访问
     如果这里不用 $timeout, $interval 这种服务，而是用原生的 js ，那么就需要在操作完成后
     主动调用 $scope.$apply() 如上演示了两种使用方式，效果都一样
     */
